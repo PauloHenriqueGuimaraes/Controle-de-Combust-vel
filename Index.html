@@ -3,8 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Combustível por KM</title>
+    <title>FuelControl - Controle de Combustível</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #2D5BFF;
+            --secondary: #6C42F5;
+            --accent: #FF6B8B;
+            --success: #2CD4A6;
+            --warning: #FFC145;
+            --danger: #FF5E76;
+            --dark: #1A2035;
+            --light: #F7F9FC;
+            --gray: #8A92A6;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -13,8 +27,8 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
             min-height: 100vh;
             padding: 20px;
             display: flex;
@@ -22,237 +36,384 @@
             align-items: center;
         }
         
-        .container {
-            max-width: 500px;
+        .app-container {
             width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
         }
         
-        header {
+        /* Header */
+        .app-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #4ECDC4;
+            position: relative;
         }
         
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #FFE66D;
+        .app-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
         
-        .subtitle {
-            color: #F7FFF7;
-            font-size: 1rem;
+        .app-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
         
-        .card {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
-            border-radius: 10px;
+        /* Main Content */
+        .app-content {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        /* Left Panel - Forms */
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            padding: 25px;
+            border-right: 1px solid #eee;
+        }
+        
+        /* Right Panel - Results */
+        .right-panel {
+            flex: 1;
+            min-width: 300px;
+            padding: 25px;
+            background: #f9fafc;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-title {
+            font-size: 1.4rem;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .card h2 {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: #4ECDC4;
-            text-align: center;
-        }
-        
+        /* Form Elements */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
-        label {
+        .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
-            color: #FFE66D;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .input-with-icon input {
+            padding-left: 45px;
         }
         
         input {
             width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.9);
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
             font-size: 1rem;
-            margin-bottom: 5px;
+            transition: all 0.3s;
         }
         
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(45, 91, 255, 0.1);
+        }
+        
+        .error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Buttons */
         .buttons {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 25px;
         }
         
         button {
-            padding: 14px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
-            font-weight: bold;
-        }
-        
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-        
-        .btn-config {
-            background: #1A535C;
-        }
-        
-        .btn-consultar {
-            background: #4ECDC4;
-            color: #1A535C;
-        }
-        
-        .btn-limpar {
-            background: #FF6B6B;
-        }
-        
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .result h2 {
-            color: #4ECDC4;
-            margin-bottom: 15px;
-        }
-        
-        .result-content {
-            font-size: 1.3rem;
-            color: #FFE66D;
-            font-weight: bold;
-            min-height: 60px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+            gap: 8px;
+            flex: 1;
         }
         
-        .info {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 230, 109, 0.1);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            color: #F7FFF7;
-            border-left: 3px solid #FFE66D;
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
+        .btn-primary {
+            background: var(--primary);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        /* Results */
         .tank-visualization {
-            height: 30px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            margin: 15px 0;
+            height: 35px;
+            background: #e5e7eb;
+            border-radius: 18px;
+            margin: 20px 0;
             overflow: hidden;
             position: relative;
         }
         
         .tank-fill {
             height: 100%;
-            background: linear-gradient(90deg, #FF6B6B, #FFE66D, #4ECDC4);
-            border-radius: 15px;
-            transition: width 0.5s ease;
+            background: linear-gradient(90deg, var(--danger), var(--warning), var(--success));
+            border-radius: 18px;
+            transition: width 0.8s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
         
         .tank-markers {
             display: flex;
             justify-content: space-between;
-            margin-top: 5px;
+            margin-top: 8px;
             font-size: 0.8rem;
-            color: #F7FFF7;
+            color: var(--gray);
         }
         
-        .error {
-            color: #FF6B6B;
+        .result-content {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .result-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .result-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .result-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .km-estimate {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .km-estimate h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .km-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: #e9f5ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border-left: 4px solid var(--primary);
             font-size: 0.9rem;
-            margin-top: 5px;
-            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-content {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Controle de Combustível</h1>
-            <p class="subtitle">Controle seu combustível pela quilometragem</p>
+    <div class="app-container">
+        <header class="app-header">
+            <h1><i class="fas fa-gas-pump"></i> FuelControl</h1>
+            <p>Controle completo do consumo do seu veículo</p>
         </header>
         
-        <div class="card">
-            <h2>Configuração Inicial</h2>
-            <div class="form-group">
-                <label for="kmPorLitro">Quantos km seu carro faz com 1 litro?</label>
-                <input type="number" id="kmPorLitro" step="0.1" placeholder="Ex: 12.5">
-                <div class="error" id="errorKmPorLitro">Por favor, insira um valor válido (maior que 0)</div>
+        <div class="app-content">
+            <div class="left-panel">
+                <h2 class="panel-title"><i class="fas fa-cog"></i> Configuração</h2>
+                
+                <div class="form-group">
+                    <label for="kmPorLitro"><i class="fas fa-tachometer-alt"></i> Consumo (km/l)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-road"></i>
+                        <input type="number" id="kmPorLitro" step="0.1" placeholder="Ex: 12.5">
+                    </div>
+                    <div class="error" id="errorKmPorLitro">Por favor, insira um valor válido (maior que 0)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="litrosAbastecidos"><i class="fas fa-oil-can"></i> Litros abastecidos</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-gas-pump"></i>
+                        <input type="number" id="litrosAbastecidos" step="0.01" placeholder="Ex: 45.50">
+                    </div>
+                    <div class="error" id="errorLitros">Por favor, insira um valor válido (maior que 0)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kmInicial"><i class="fas fa-route"></i> KM no abastecimento</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="number" id="kmInicial" placeholder="Ex: 38500">
+                    </div>
+                    <div class="error" id="errorKmInicial">Por favor, insira um valor válido (maior que 0)</div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn-primary" onclick="salvarDados()">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+                
+                <div class="info-box">
+                    <p><strong>Dica:</strong> Preencha esses dados sempre que abastecer seu veículo para um controle preciso.</p>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="litrosAbastecidos">Quantos litros foram abastecidos?</label>
-                <input type="number" id="litrosAbastecidos" step="0.01" placeholder="Ex: 45.50">
-                <div class="error" id="errorLitros">Por favor, insira um valor válido (maior que 0)</div>
+            <div class="right-panel">
+                <h2 class="panel-title"><i class="fas fa-search"></i> Consulta</h2>
+                
+                <div class="form-group">
+                    <label for="kmAtual"><i class="fas fa-car"></i> KM atual</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="number" id="kmAtual" placeholder="Digite a KM atual">
+                    </div>
+                    <div class="error" id="errorKmAtual">Por favor, insira um valor válido</div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn-success" onclick="calcularCombustivel()">
+                        <i class="fas fa-calculator"></i> Calcular
+                    </button>
+                    <button class="btn-danger" onclick="limparDados()">
+                        <i class="fas fa-trash"></i> Limpar
+                    </button>
+                </div>
+                
+                <h2 class="panel-title"><i class="fas fa-chart-line"></i> Resultado</h2>
+                
+                <div class="tank-visualization">
+                    <div class="tank-fill" id="tankFill" style="width: 0%"></div>
+                </div>
+                <div class="tank-markers">
+                    <span>0%</span>
+                    <span>50%</span>
+                    <span>100%</span>
+                </div>
+                
+                <div class="result-content" id="resultado">
+                    <div style="text-align: center; color: var(--gray); padding: 20px;">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                        <p>Configure os dados do seu veículo e consulte o combustível atual</p>
+                    </div>
+                </div>
+                
+                <div class="km-estimate" id="kmEstimate" style="display: none;">
+                    <h3>Autonomia restante</h3>
+                    <div class="km-value" id="kmValue">0 km</div>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label for="kmInicial">KM do carro no abastecimento</label>
-                <input type="number" id="kmInicial" placeholder="Ex: 38500">
-                <div class="error" id="errorKmInicial">Por favor, insira um valor válido (maior que 0)</div>
-            </div>
-            
-            <div class="buttons">
-                <button class="btn-config" onclick="salvarDados()">Salvar Configuração</button>
-            </div>
-        </div>
-        
-        <div class="card">
-            <h2>Consultar Combustível</h2>
-            <div class="form-group">
-                <label for="kmAtual">KM atual do carro</label>
-                <input type="number" id="kmAtual" placeholder="Digite a KM atual">
-                <div class="error" id="errorKmAtual">Por favor, insira um valor válido</div>
-            </div>
-            
-            <div class="buttons">
-                <button class="btn-consultar" onclick="calcularCombustivel()">Calcular Combustível</button>
-                <button class="btn-limpar" onclick="limparDados()">Limpar Tudo</button>
-            </div>
-        </div>
-        
-        <div class="result">
-            <h2>Resultado</h2>
-            <div class="tank-visualization">
-                <div class="tank-fill" id="tankFill" style="width: 0%"></div>
-            </div>
-            <div class="tank-markers">
-                <span>0%</span>
-                <span>50%</span>
-                <span>100%</span>
-            </div>
-            <div class="result-content" id="resultado">
-                Configure os dados do seu veículo
-            </div>
-        </div>
-        
-        <div class="info">
-            <p><strong>Como usar:</strong> Primeiro preencha os dados do abastecimento e clique em "Salvar Configuração". Depois, para consultar o combustível, digite a KM atual e clique em "Calcular Combustível".</p>
         </div>
     </div>
 
@@ -276,8 +437,20 @@
             }
             
             if (kmPorLitro && litrosAbastecidos && kmInicial) {
-                document.getElementById('resultado').textContent = 
-                    `Dados carregados: ${kmPorLitro} km/L, ${litrosAbastecidos}L, KM: ${kmInicial}`;
+                document.getElementById('resultado').innerHTML = `
+                    <div class="result-item">
+                        <span class="result-label">Consumo:</span>
+                        <span class="result-value">${kmPorLitro} km/L</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Tanque:</span>
+                        <span class="result-value">${litrosAbastecidos} L</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">KM inicial:</span>
+                        <span class="result-value">${kmInicial}</span>
+                    </div>
+                `;
             }
         };
         
@@ -289,11 +462,11 @@
             
             if (isNaN(value) || value <= 0) {
                 errorElement.style.display = 'block';
-                input.style.border = '2px solid #FF6B6B';
+                input.style.borderColor = 'var(--danger)';
                 return null;
             } else {
                 errorElement.style.display = 'none';
-                input.style.border = '';
+                input.style.borderColor = '#e5e7eb';
                 return value;
             }
         }
@@ -313,11 +486,29 @@
             localStorage.setItem('litrosAbastecidos', litrosAbastecidos);
             localStorage.setItem('kmInicial', kmInicial);
             
-            document.getElementById('resultado').textContent = 
-                `Dados salvos: ${kmPorLitro} km/L, ${litrosAbastecidos}L, KM: ${kmInicial}`;
+            document.getElementById('resultado').innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Consumo:</span>
+                    <span class="result-value">${kmPorLitro} km/L</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Tanque:</span>
+                    <span class="result-value">${litrosAbastecidos} L</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">KM inicial:</span>
+                    <span class="result-value">${kmInicial}</span>
+                </div>
+            `;
                 
             // Limpar campo de KM atual
             document.getElementById('kmAtual').value = '';
+            
+            // Esconder estimativa de KM
+            document.getElementById('kmEstimate').style.display = 'none';
+            
+            // Resetar visualização do tanque
+            document.getElementById('tankFill').style.width = '0%';
         }
         
         // Função para calcular o combustível
@@ -340,7 +531,7 @@
             if (kmAtual < kmInicialNum) {
                 document.getElementById('errorKmAtual').textContent = 'A KM atual não pode ser menor que a KM do abastecimento!';
                 document.getElementById('errorKmAtual').style.display = 'block';
-                document.getElementById('kmAtual').style.border = '2px solid #FF6B6B';
+                document.getElementById('kmAtual').style.borderColor = 'var(--danger)';
                 return;
             }
             
@@ -356,21 +547,45 @@
             // Calcular porcentagem do tanque
             const porcentagemTanque = (litrosRestantes / parseFloat(litrosAbastecidos)) * 100;
             
+            // Calcular quantos km ainda pode andar
+            const kmRestantes = litrosRestantes * parseFloat(kmPorLitro);
+            
             // Atualizar visualização do tanque
             const tankFill = document.getElementById('tankFill');
-            tankFill.style.width = Math.max(0, Math.min(100, porcentagemTanque)) + '%';
+            const porcentagemVisual = Math.max(0, Math.min(100, porcentagemTanque));
+            tankFill.style.width = porcentagemVisual + '%';
+            tankFill.textContent = porcentagemVisual.toFixed(1) + '%';
+            
+            // Mostrar estimativa de KM
+            document.getElementById('kmEstimate').style.display = 'block';
+            document.getElementById('kmValue').textContent = kmRestantes.toFixed(0) + ' km';
             
             if (litrosRestantes <= 0) {
                 document.getElementById('resultado').innerHTML = 
-                    `<div style="color: #FF6B6B; font-size: 1.4rem;">⛽ Seu tanque está vazio!</div>
-                     <div>Você percorreu ${kmPercorridos} km desde o abastecimento.</div>
-                     <div>Consumiu aproximadamente ${litrosConsumidos.toFixed(2)} litros.</div>`;
+                    `<div style="text-align: center; color: var(--danger); padding: 10px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <h3>Tanque vazio!</h3>
+                        <p>Você percorreu ${kmPercorridos} km desde o abastecimento</p>
+                        <p>Consumiu ${litrosConsumidos.toFixed(2)} litros</p>
+                    </div>`;
             } else {
                 document.getElementById('resultado').innerHTML = 
-                    `<div style="color: #4ECDC4; font-size: 1.4rem;">⛽ ${litrosRestantes.toFixed(2)} litros restantes</div>
-                     <div>Isso representa ${porcentagemTanque.toFixed(1)}% da capacidade do tanque</div>
-                     <div>Você percorreu ${kmPercorridos} km desde o abastecimento</div>
-                     <div style="font-size: 1rem; margin-top: 10px;">Seu carro faz ${kmPorLitro} km/l</div>`;
+                    `<div class="result-item">
+                        <span class="result-label">Litros restantes:</span>
+                        <span class="result-value">${litrosRestantes.toFixed(2)} L</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Tanque:</span>
+                        <span class="result-value">${porcentagemTanque.toFixed(1)}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">KM percorridos:</span>
+                        <span class="result-value">${kmPercorridos} km</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Consumo:</span>
+                        <span class="result-value">${kmPorLitro} km/L</span>
+                    </div>`;
             }
         }
         
@@ -390,6 +605,10 @@
                 
                 // Resetar visualização do tanque
                 document.getElementById('tankFill').style.width = '0%';
+                document.getElementById('tankFill').textContent = '';
+                
+                // Esconder estimativa de KM
+                document.getElementById('kmEstimate').style.display = 'none';
                 
                 // Esconder mensagens de erro
                 document.querySelectorAll('.error').forEach(error => {
@@ -398,10 +617,14 @@
                 
                 // Resetar bordas dos inputs
                 document.querySelectorAll('input').forEach(input => {
-                    input.style.border = '';
+                    input.style.borderColor = '#e5e7eb';
                 });
                 
-                document.getElementById('resultado').textContent = 'Dados limpos com sucesso!';
+                document.getElementById('resultado').innerHTML = 
+                    `<div style="text-align: center; color: var(--gray); padding: 20px;">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                        <p>Configure os dados do seu veículo e consulte o combustível atual</p>
+                    </div>`;
             }
         }
     </script>
