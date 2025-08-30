@@ -150,6 +150,12 @@
             box-shadow: 0 0 0 3px rgba(45, 91, 255, 0.1);
         }
         
+        input:disabled {
+            background-color: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+        
         .error {
             color: var(--danger);
             font-size: 0.85rem;
@@ -265,6 +271,25 @@
             color: var(--dark);
         }
         
+        .litros-display {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .litros-display h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .litros-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
         .km-estimate {
             background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
@@ -351,7 +376,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="kmInicial"><i class="fas fa-route"></i> KM no abastecimento</label>
+                    <label for="kmInicial"><i class="fas fa-route"></i> Km do carro com tanque vazio</label>
                     <div class="input-with-icon">
                         <i class="fas fa-map-marker-alt"></i>
                         <input type="number" id="kmInicial" placeholder="Ex: 38500">
@@ -359,9 +384,21 @@
                     <div class="error" id="errorKmInicial">Por favor, insira um valor válido (maior que 0)</div>
                 </div>
                 
+                <div class="form-group" id="novoAbastecimentoGroup" style="display: none;">
+                    <label for="novosLitros"><i class="fas fa-oil-can"></i> Novo abastecimento (litros)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-gas-pump"></i>
+                        <input type="number" id="novosLitros" step="0.01" placeholder="Ex: 20.00">
+                    </div>
+                    <div class="error" id="errorNovosLitros">Por favor, insira um valor válido (maior que 0)</div>
+                </div>
+                
                 <div class="buttons">
-                    <button class="btn-primary" onclick="salvarDados()">
+                    <button class="btn-primary" id="btnSalvar" onclick="salvarDados()">
                         <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <button class="btn-success" id="btnAdicionarLitros" style="display: none;" onclick="adicionarLitros()">
+                        <i class="fas fa-plus"></i> Adicionar Litros
                     </button>
                 </div>
                 
@@ -402,6 +439,11 @@
                     <span>100%</span>
                 </div>
                 
+                <div class="litros-display" id="litrosDisplay" style="display: none;">
+                    <h3>Litros no tanque</h3>
+                    <div class="litros-value" id="litrosValue">0 L</div>
+                </div>
+                
                 <div class="result-content" id="resultado">
                     <div style="text-align: center; color: var(--gray); padding: 20px;">
                         <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 15px;"></i>
@@ -418,11 +460,15 @@
     </div>
 
     <script>
+        // Variável para controlar se os campos estão bloqueados
+        let camposBloqueados = false;
+        
         // Carregar dados do localStorage ao iniciar
         window.onload = function() {
             const kmPorLitro = localStorage.getItem('kmPorLitro');
             const litrosAbastecidos = localStorage.getItem('litrosAbastecidos');
             const kmInicial = localStorage.getItem('kmInicial');
+            const camposBloqueadosCache = localStorage.getItem('camposBloqueados');
             
             if (kmPorLitro) {
                 document.getElementById('kmPorLitro').value = kmPorLitro;
@@ -436,6 +482,12 @@
                 document.getElementById('kmInicial').value = kmInicial;
             }
             
+            // Verificar se os campos devem estar bloqueados
+            if (camposBloqueadosCache === 'true') {
+                bloquearCampos();
+                mostrarCampoNovoAbastecimento();
+            }
+            
             if (kmPorLitro && litrosAbastecidos && kmInicial) {
                 document.getElementById('resultado').innerHTML = `
                     <div class="result-item">
@@ -443,7 +495,7 @@
                         <span class="result-value">${kmPorLitro} km/L</span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label">Tanque:</span>
+                        <span class="result-label">Tanque cheio:</span>
                         <span class="result-value">${litrosAbastecidos} L</span>
                     </div>
                     <div class="result-item">
@@ -471,6 +523,38 @@
             }
         }
         
+        // Função para bloquear os campos
+        function bloquearCampos() {
+            document.getElementById('kmPorLitro').disabled = true;
+            document.getElementById('litrosAbastecidos').disabled = true;
+            document.getElementById('kmInicial').disabled = true;
+            camposBloqueados = true;
+            localStorage.setItem('camposBloqueados', 'true');
+        }
+        
+        // Função para desbloquear os campos
+        function desbloquearCampos() {
+            document.getElementById('kmPorLitro').disabled = false;
+            document.getElementById('litrosAbastecidos').disabled = false;
+            document.getElementById('kmInicial').disabled = false;
+            camposBloqueados = false;
+            localStorage.setItem('camposBloqueados', 'false');
+        }
+        
+        // Função para mostrar o campo de novo abastecimento
+        function mostrarCampoNovoAbastecimento() {
+            document.getElementById('novoAbastecimentoGroup').style.display = 'block';
+            document.getElementById('btnAdicionarLitros').style.display = 'flex';
+            document.getElementById('btnSalvar').style.display = 'none';
+        }
+        
+        // Função para esconder o campo de novo abastecimento
+        function esconderCampoNovoAbastecimento() {
+            document.getElementById('novoAbastecimentoGroup').style.display = 'none';
+            document.getElementById('btnAdicionarLitros').style.display = 'none';
+            document.getElementById('btnSalvar').style.display = 'flex';
+        }
+        
         // Função para salvar dados
         function salvarDados() {
             const kmPorLitro = validarEntrada('kmPorLitro', 'errorKmPorLitro');
@@ -486,13 +570,19 @@
             localStorage.setItem('litrosAbastecidos', litrosAbastecidos);
             localStorage.setItem('kmInicial', kmInicial);
             
+            // Bloquear os campos após salvar
+            bloquearCampos();
+            
+            // Mostrar o campo para novo abastecimento
+            mostrarCampoNovoAbastecimento();
+            
             document.getElementById('resultado').innerHTML = `
                 <div class="result-item">
                     <span class="result-label">Consumo:</span>
                     <span class="result-value">${kmPorLitro} km/L</span>
                 </div>
                 <div class="result-item">
-                    <span class="result-label">Tanque:</span>
+                    <span class="result-label">Tanque cheio:</span>
                     <span class="result-value">${litrosAbastecidos} L</span>
                 </div>
                 <div class="result-item">
@@ -504,11 +594,42 @@
             // Limpar campo de KM atual
             document.getElementById('kmAtual').value = '';
             
-            // Esconder estimativa de KM
+            // Esconder estimativa de KM e display de litros
             document.getElementById('kmEstimate').style.display = 'none';
+            document.getElementById('litrosDisplay').style.display = 'none';
             
             // Resetar visualização do tanque
             document.getElementById('tankFill').style.width = '0%';
+            document.getElementById('tankFill').textContent = '';
+        }
+        
+        // Função para adicionar litros ao tanque
+        function adicionarLitros() {
+            const novosLitros = validarEntrada('novosLitros', 'errorNovosLitros');
+            if (novosLitros === null) return;
+            
+            // Obter os litros atuais do localStorage
+            const litrosAtuais = parseFloat(localStorage.getItem('litrosAbastecidos'));
+            
+            // Somar os novos litros com os litros atuais
+            const totalLitros = litrosAtuais + novosLitros;
+            
+            // Atualizar o valor no localStorage
+            localStorage.setItem('litrosAbastecidos', totalLitros);
+            
+            // Atualizar o campo "Litros abastecidos" na interface
+            document.getElementById('litrosAbastecidos').value = totalLitros;
+            
+            // Limpar o campo de novos litros
+            document.getElementById('novosLitros').value = '';
+            
+            // Atualizar a exibição na interface
+            if (document.querySelector('#resultado .result-item:nth-child(2) .result-value')) {
+                document.querySelector('#resultado .result-item:nth-child(2) .result-value').textContent = totalLitros + ' L';
+            }
+            
+            // Mostrar mensagem de sucesso
+            alert(`Adicionados ${novosLitros} litros. Total no tanque: ${totalLitros} litros.`);
         }
         
         // Função para calcular o combustível
@@ -556,6 +677,10 @@
             tankFill.style.width = porcentagemVisual + '%';
             tankFill.textContent = porcentagemVisual.toFixed(1) + '%';
             
+            // Mostrar display de litros
+            document.getElementById('litrosDisplay').style.display = 'block';
+            document.getElementById('litrosValue').textContent = litrosRestantes.toFixed(1) + ' L';
+            
             // Mostrar estimativa de KM
             document.getElementById('kmEstimate').style.display = 'block';
             document.getElementById('kmValue').textContent = kmRestantes.toFixed(0) + ' km';
@@ -571,19 +696,15 @@
             } else {
                 document.getElementById('resultado').innerHTML = 
                     `<div class="result-item">
-                        <span class="result-label">Litros restantes:</span>
-                        <span class="result-value">${litrosRestantes.toFixed(2)} L</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">Tanque:</span>
-                        <span class="result-value">${porcentagemTanque.toFixed(1)}%</span>
-                    </div>
-                    <div class="result-item">
                         <span class="result-label">KM percorridos:</span>
                         <span class="result-value">${kmPercorridos} km</span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label">Consumo:</span>
+                        <span class="result-label">Litros consumidos:</span>
+                        <span class="result-value">${litrosConsumidos.toFixed(2)} L</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Consumo médio:</span>
                         <span class="result-value">${kmPorLitro} km/L</span>
                     </div>`;
             }
@@ -596,19 +717,28 @@
                 localStorage.removeItem('kmPorLitro');
                 localStorage.removeItem('litrosAbastecidos');
                 localStorage.removeItem('kmInicial');
+                localStorage.removeItem('camposBloqueados');
+                
+                // Desbloquear campos
+                desbloquearCampos();
+                
+                // Esconder campo de novo abastecimento
+                esconderCampoNovoAbastecimento();
                 
                 // Limpar campos
                 document.getElementById('kmPorLitro').value = '';
                 document.getElementById('litrosAbastecidos').value = '';
                 document.getElementById('kmInicial').value = '';
                 document.getElementById('kmAtual').value = '';
+                document.getElementById('novosLitros').value = '';
                 
                 // Resetar visualização do tanque
                 document.getElementById('tankFill').style.width = '0%';
                 document.getElementById('tankFill').textContent = '';
                 
-                // Esconder estimativa de KM
+                // Esconder estimativa de KM e display de litros
                 document.getElementById('kmEstimate').style.display = 'none';
+                document.getElementById('litrosDisplay').style.display = 'none';
                 
                 // Esconder mensagens de erro
                 document.querySelectorAll('.error').forEach(error => {
